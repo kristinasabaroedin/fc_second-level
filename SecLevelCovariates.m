@@ -1,13 +1,14 @@
 % This script runs a 6x2 multifactorial design for second level analysis (main effect of DiMartino's striatal seeds)
 
+%clear all
 clc
 
 %==========================================================================
 % Directories
 %==========================================================================
 datadir = '/projects/kg98/kristina/GenofCog/datadir/derivatives/'
-firstlevel_dir = ['/firstlevel/DiMartino+GSR/'];
-outdir = [datadir,'secondlevel/DiMartino+GSR/FactorScores/']
+firstlevel_dir = ['/firstlevel/DiMartino/'];
+outdir = [datadir,'secondlevel/DiMartino/FactorScores/DRP_SzG/']
 
 % make outdir
 if exist(outdir) == 0
@@ -20,6 +21,7 @@ end
 % ------------------------------------------------------------------------------
 % Load in non imaging data
 % ------------------------------------------------------------------------------
+workdir = [datadir,'secondlevel/'];
 cd(workdir)
 load('SzFactorScores.mat')
 
@@ -27,13 +29,13 @@ load('SzFactorScores.mat')
 % Count number of subjects (subs variable in matlab)
 % ------------------------------------------------------------------------------
 % number of subjects
-numSubs = length(subs)
+numSubs = length(subs);
 
 
 % ------------------------------------------------------------------------------
 % Select ROI
 % ------------------------------------------------------------------------------
-ROInum = 3; 
+ROInum = 5; 
 
 if ROInum == 1
     ROIname = 'VSi'
@@ -55,7 +57,7 @@ conImage = ['con_000',num2str(ROInum),'.img'];
 % Define covariates
 % ------------------------------------------------------------------------------        
 
-Cov_names = {'SchizG','SchizNeg','SchizPos'};
+Cov_names = {'SchizG'}; %'SchizG', 'SchizNeg', 'SchizPos'
 numCov = length(Cov_names);
 
 % ------------------------------------------------------------------------------
@@ -110,7 +112,7 @@ end
 
 matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1;
 matlabbatch{1}.spm.stats.factorial_design.masking.im = 0;
-matlabbatch{1}.spm.stats.factorial_design.masking.em = {'/projects/kg98/kristina/GenofCog/masks/fep-3mm-bin.img,1'};
+matlabbatch{1}.spm.stats.factorial_design.masking.em = {'/projects/kg98/kristina/templates/MNI152_T1_2mm_brain_mask.nii,1'};
 matlabbatch{1}.spm.stats.factorial_design.globalc.g_omit = 1;
 matlabbatch{1}.spm.stats.factorial_design.globalm.gmsca.gmsca_no = 1;
 matlabbatch{1}.spm.stats.factorial_design.globalm.glonorm = 1;
@@ -130,16 +132,12 @@ matlabbatch{2}.spm.stats.fmri_est.method.Classical = 1;
 matlabbatch{3}.spm.stats.con.spmmat = {[outdir,'SPM.mat']};
 matlabbatch{3}.spm.stats.con.delete = 1;
 
-matlabbatch{3}.spm.stats.con.consess{1}.tcon.name = 'SchizPos';
-matlabbatch{3}.spm.stats.con.consess{1}.tcon.convec = [0 0 0 0 1];
+matlabbatch{3}.spm.stats.con.consess{1}.tcon.name = 'SchizG-';
+matlabbatch{3}.spm.stats.con.consess{1}.tcon.convec = [0 0 -1];
 matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
-matlabbatch{3}.spm.stats.con.consess{2}.tcon.name = 'SchizG';
-matlabbatch{3}.spm.stats.con.consess{2}.tcon.convec = [0 0 1 0 0];
+matlabbatch{3}.spm.stats.con.consess{2}.tcon.name = 'SchizG+';
+matlabbatch{3}.spm.stats.con.consess{2}.tcon.convec = [0 0 1];
 matlabbatch{3}.spm.stats.con.consess{2}.tcon.sessrep = 'none';
-matlabbatch{3}.spm.stats.con.consess{3}.tcon.name = 'SchizNeg';
-matlabbatch{3}.spm.stats.con.consess{3}.tcon.convec = [0 0 0 1 0];
-matlabbatch{3}.spm.stats.con.consess{3}.tcon.sessrep = 'none';
-
 
 
 % ------------------------------------------------------------------------------
